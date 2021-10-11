@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 #define BUF_SIZE 1024
 
@@ -22,62 +25,53 @@ bool is_vowel(char c) {
 }
 
 int copy_non_vowels(int num_chars, char* in_buf, char* out_buf) {
-    /*
-     * Copy all the non-vowels from in_buf to out_buf.
-     * num_chars indicates how many characters are in in_buf,
-     * and this function should return the number of non-vowels that
-     * that were copied over.
-     */
+    int i;
+    int posInOutBuff = 0;
+    int numberOfConsonants = 0;
+    for(i = 0; i < num_chars; i++){
+        if(!is_vowel(in_buf[i])) {
+            out_buf[posInOutBuff] = in_buf[i];
+            posInOutBuff++;
+            numberOfConsonants++;
+        }
+    }
+    return numberOfConsonants;
 }
 
 void disemvowel(FILE* inputFile, FILE* outputFile) {
-    /*
-     * Copy all the non-vowels from inputFile to outputFile.
-     * Create input and output buffers, 
-     * and use fread() to repeatedly read in a buffer of data, 
-     * copy the non-vowels to the output buffer,
-     * and use fwrite to write that out.
-     */
-    char buffer[BUF_SIZE];
-    switch(argc) {
-        case 1:
-            printf("Enter string(s) to be disemvoweled: ");
-            FILE *inputFile = fread(buffer, sizeof(char), BUF_SIZE, stdin);
-            FILE *outputFile = fwrite(buffer, sizeof(char), BUF_SIZE, stdout);
-            break;
-        case 2:
-            FILE *inputFile = fread(buffer, sizeof(char), BUF_SIZE, fopen(argv[1], "r"));
-            FILE *outputFile = fwrite(buffer, sizeof(char), BUF_SIZE, stdout);
-            break;
-        case 3:
-            FILE *inputFile = fread(buffer, sizeof(char), BUF_SIZE, fopen(argv[1], "r"));
-            FILE *outputFile = fwrite(buffer, sizeof(char), BUF_SIZE, fopen(argv[2], "w"));
-            break;
-    }
+    int readBytes, nonvowels;
+
+    char* inputFileBuffer = calloc(BUF_SIZE, sizeof(char));
+    char* outputFileBuffer = calloc(BUF_SIZE, sizeof(char));
     
-     if ( == NULL)
-    {
-        //process a string
+    while (!readBytes == 0) {
+        readBytes = fread(inputFileBuffer, sizeof(char), BUF_SIZE, inputFile); //Returns 0 at end of file, ending loop
+        nonvowels = copy_non_vowels(readBytes, inputFileBuffer, outputFileBuffer);
+        fwrite(outputFileBuffer, sizeof(char), nonvowels, outputFile);
     }
-    //process as file
+
+    free(inputFileBuffer);
+    free(outputFileBuffer);
 }
 
 
 int main(int argc, char *argv[]) {
     FILE *inputFile = stdin;
     FILE *outputFile = stdout;
-    char buffer[BUF_SIZE];
     switch(argc) {
         case 2:
-            FILE inputFile = fopen(argv[1], "r");
+            inputFile = fopen(argv[1], "r");
             break;
         case 3:
-            FILE inputFile = fopen(argv[1], "r");
-            FILE outputFile = fopen(argv[2], "w");
+            inputFile = fopen(argv[1], "r");
+            outputFile = fopen(argv[2], "w");
             break;
     }
 
     disemvowel(inputFile, outputFile);
+
+    fclose(inputFile);
+    fclose(outputFile);
 
     return 0;
 }
