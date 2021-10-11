@@ -39,7 +39,8 @@ int copy_non_vowels(int num_chars, char* in_buf, char* out_buf) {
 }
 
 void disemvowel(FILE* inputFile, FILE* outputFile) {
-    int readBytes, nonvowels;
+    int readBytes = 69;
+    int nonvowels;
 
     char* inputFileBuffer = calloc(BUF_SIZE, sizeof(char));
     char* outputFileBuffer = calloc(BUF_SIZE, sizeof(char));
