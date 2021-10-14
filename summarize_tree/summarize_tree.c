@@ -39,7 +39,6 @@ void process_directory(const char* basePath) {
 
   while ((dp = readdir(dir)) != NULL) {
     if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0) {
-      num_dirs++;
 
       // Construct new path from our base path
       strcpy(path, basePath);
@@ -49,6 +48,7 @@ void process_directory(const char* basePath) {
       process_path(path);
     }
   }
+  num_dirs++;
 
   closedir(dir);
 }
