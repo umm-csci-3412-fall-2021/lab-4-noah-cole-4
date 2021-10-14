@@ -15,8 +15,9 @@ bool is_dir(const char* path) {
   if(status == 0) {
     if (S_ISDIR(buf->st_mode)) {
       free(buf);
-    return true;
+      return true;
     } else {
+      free(buf);
       return false;
     }
   } else {
