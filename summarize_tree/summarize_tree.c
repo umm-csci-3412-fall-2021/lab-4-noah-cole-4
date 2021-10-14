@@ -9,13 +9,21 @@
 static int num_dirs, num_regular;
 
 bool is_dir(const char* path) {
-  /*
-   * Use the stat() function (try "man 2 stat") to determine if the file
-   * referenced by path is a directory or not.  Call stat, and then use
-   * S_ISDIR to see if the file is a directory. Make sure you check the
-   * return value from stat() in case there is a problem, e.g., maybe the
-   * the file doesn't actually exist.
-   */
+  struct stat *buf;
+  buf = malloc(sizeof(struct stat));
+  int status = stat(path, buf);
+  if(status == 0) {
+    if (S_ISDIR(buf->st_mode)) {
+      free(buf);
+      return true;
+    } else {
+      free(buf);
+      return false;
+    }
+  } else {
+    free(buf);
+    return false;
+  }
 }
 
 /* 
@@ -24,25 +32,30 @@ bool is_dir(const char* path) {
  */
 void process_path(const char*);
 
-void process_directory(const char* path) {
-  /*
-   * Update the number of directories seen, use opendir() to open the
-   * directory, and then use readdir() to loop through the entries
-   * and process them. You have to be careful not to process the
-   * "." and ".." directory entries, or you'll end up spinning in
-   * (infinite) loops. Also make sure you closedir() when you're done.
-   *
-   * You'll also want to use chdir() to move into this new directory,
-   * with a matching call to chdir() to move back out of it when you're
-   * done.
-   */
+void process_directory(const char* basePath) {
+  char path[1000];
+  struct dirent *dp;
+  int directories = 0;
+  DIR *dir = opendir(basePath);
+
+  while ((dp = readdir(dir)) != NULL) {
+    if (strcmp(dp->d_name, ".") != 0 && strcmp(dp->d_name, "..") != 0) {
+
+      // Construct new path from our base path
+      strcpy(path, basePath);
+      strcat(path, "/");
+      strcat(path, dp->d_name);
+
+      process_path(path);
+    }
+  }
+  num_dirs++;
+
+  closedir(dir);
 }
 
 void process_file(const char* path) {
-  /*
-   * Update the number of regular files.
-   * This is as simple as it seems. :-)
-   */
+  num_regular++;
 }
 
 void process_path(const char* path) {
